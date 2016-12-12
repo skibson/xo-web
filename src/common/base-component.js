@@ -43,6 +43,7 @@ export default class BaseComponent extends Component {
     // It really should have been done in React.Component!
     this.state = {}
 
+    this._linkedRefs = null
     this._linkedState = null
 
     if (VERBOSE) {
@@ -52,6 +53,20 @@ export default class BaseComponent extends Component {
         return render.call(this)
       })
     }
+  }
+
+  // String refs are deprecated in React and do not exists in Preact.
+  //
+  // If necessary, this function can be used.
+  //
+  // See https://gist.github.com/developit/63e7a81a507c368f7fc0898076f64d8d#file-linked-ref-js
+  linkRef (name) {
+    const linkedRefs = this._linkedRefs || (this._linkedRefs = {})
+    const refs = this.refs || (this.refs = {})
+
+    return linkedRefs[name] || (linkedRefs[name] = ref => {
+      refs[name] = ref
+    })
   }
 
   // See https://preactjs.com/guide/linked-state
